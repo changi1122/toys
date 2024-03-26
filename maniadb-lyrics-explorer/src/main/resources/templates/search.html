@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>앨범 검색</title>
+</head>
+<body>
+    <form id="searchForm" action="/search" method="GET">
+        <input type="text" id="query" name="query" placeholder="검색어를 입력하세요" th:value="${query}">
+        <button type="submit">검색</button>
+    </form>
+    <div th:if="${items.size() == 0}">
+        <p>검색 결과가 없습니다.</p>
+    </div>
+    <ul id="searchResults" th:each="item : ${items}">
+        <li><a th:href="'/album/' + ${item.id}" th:text="${item.title}"></a></li>
+    </ul>
+</body>
+</html>
