@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${album.title}"></title>
+</head>
+<body>
+    <h2 th:text="${album.title}"></h2>
+    <p th:text="${album.link}"></p>
+    <p th:text="${album.artist}"></p>
+    <p th:text="${album.release}"></p>
+    <hr/>
+    <div th:if="${songs.size() == 0}">
+        <p>곡 정보가 없습니다.</p>
+    </div>
+    <ul id="songs" th:each="song : ${songs}">
+        <li>
+            <h3 th:text="${song.title}"></h3>
+            <p th:text="${song.lyric}"></p>
+        </li>
+    </ul>
+</body>
+</html>
