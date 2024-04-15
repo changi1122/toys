@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>입력 폼</title>
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700&amp;display=swap" rel="stylesheet">
+    <style>
+        html {
+            font-family: Noto Sans KR, Apple SD Gothic Neo, Malgun Gothic, sans-serif;
+        }
+        input[type=text], input[type=number] {
+            width: 200px;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+        .genre {
+            width: 400px;
+        }
+        textarea {
+            width: 400px;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 8px 24px;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+    <form action="/api/music" method="post">
+        <label for="title">제목: </label><br>
+        <input type="text" id="title" name="title"><br>
+        <label for="artist">가수:</label><br>
+        <input type="text" id="artist" name="artist"><br>
+        <label>장르: </label><br>
+        <div class="genre">
+            <input type="radio" id="kpop" name="genre" value="kpop" checked>
+            <label for="kpop">가요</label>
+            <input type="radio" id="pop" name="genre" value="pop">
+            <label for="pop">팝송</label>
+            <input type="radio" id="ballade" name="genre" value="ballade">
+            <label for="ballade">발라드</label>
+            <input type="radio" id="rap" name="genre" value="rap">
+            <label for="rap">랩/힙합</label>
+            <input type="radio" id="dance" name="genre" value="dance">
+            <label for="dance">댄스</label>
+            <input type="radio" id="jpop" name="genre" value="jpop">
+            <label for="jpop">JPOP</label>
+            <input type="radio" id="rnb" name="genre" value="rnb">
+            <label for="rnb">R&B</label>
+            <input type="radio" id="ost" name="genre" value="ost">
+            <label for="ost">OST</label>
+            <input type="radio" id="indie" name="genre" value="indie">
+            <label for="indie">인디뮤직</label>
+            <input type="radio" id="trot" name="genre" value="trot">
+            <label for="trot">트로트</label>
+            <input type="radio" id="kid" name="genre" value="kid">
+            <label for="kid">어린이곡</label>
+        </div>
+
+        <label for="release">발매년도: </label><br>
+        <input type="number" id="release" name="release" value="2010"><br>
+        <label for="nation">국적: </label><br>
+        <input type="text" id="nation" name="nation" value="대한민국"><br>
+        <label for="lyric">가사: </label><br>
+        <textarea id="lyric" name="lyric" rows="5"></textarea><br>
+        <button type="submit">저장</button>
+    </form>
+</body>
+</html>

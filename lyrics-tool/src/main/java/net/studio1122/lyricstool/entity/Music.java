@@ -1,17 +1,21 @@
-package net.studio1122.maniadblyricsexplorer.entity;
+package net.studio1122.lyricstool.entity;
+
 
 import lombok.Data;
+import lombok.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Document(value = "song")
-public class Song {
+@Document("music")
+public class Music {
 
     @Id private String id;
+    @NonNull
     private String title;
-    private String link;
-    private String release;
     private String artist;
+    private String genre;
+    private String release;
+    private String nation;
     private String lyric;
 }
