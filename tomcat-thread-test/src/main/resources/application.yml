@@ -4,8 +4,10 @@ spring:
 
 server:
   tomcat:
-    threads:
-      max: 10
+#    threads:
+#      max: 10
+#      max-queue-capacity: 5
     accept-count: 5
+    max-connections: 10
 
   port: 80
