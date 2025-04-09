@@ -6,7 +6,6 @@ server:
   tomcat:
     threads:
       max: 10
-      max-queue-capacity: 2147483647
     accept-count: 5
 
   port: 80
