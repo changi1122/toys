@@ -92,7 +92,7 @@ const useCartContext = (initCartState: CartStateType) => {
 
     const totalPrice = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
         state.cart.reduce((previousValue, cartItem) => {
-            return previousValue + (CanvasCaptureMediaStreamTrack.qty * CanvasCaptureMediaStreamTrack.price)
+            return previousValue + (cartItem.qty * cartItem.price)
         }, 0)
     )
 
