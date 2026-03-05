@@ -9,8 +9,8 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.TimeUnit
 
-class OllamaSummarizer(
-    private val ollamaUrl: String,
+class AISummarizer(
+    private val apiKey: String,
     private val model: String
 ) {
     private val client = OkHttpClient.Builder()
@@ -28,33 +28,37 @@ class OllamaSummarizer(
         }
 
         return try {
-            val prompt = "다음 글을 한국어로 2-3문장으로 요약해줘:\n\n${item.content}"
+            val prompt = "다음 글을 한국어로 3-4문장으로 요약해줘:\n\n${item.content}"
             val body = gson.toJson(
                 mapOf(
                     "model" to model,
-                    "prompt" to prompt,
-                    "stream" to false
+                    "messages" to listOf(mapOf("role" to "user", "content" to prompt))
                 )
             )
 
             val request = Request.Builder()
-                .url("$ollamaUrl/api/generate")
+                .url("https://openrouter.ai/api/v1/chat/completions")
+                .addHeader("Authorization", "Bearer $apiKey")
                 .post(body.toRequestBody(jsonMediaType))
                 .build()
 
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) {
-                    println("  [WARN] Ollama 요약 실패 (HTTP ${response.code}): ${item.title}")
+                    println("  [WARN] 본문 요약 실패 (HTTP ${response.code}): ${item.title}")
                     return item.copy(summary = "(요약 실패: HTTP ${response.code})")
                 }
 
                 val responseBody = response.body?.string() ?: ""
                 val json = JsonParser.parseString(responseBody).asJsonObject
-                val summary = json.get("response")?.asString?.trim() ?: "(응답 파싱 실패)"
+                val summary = json.getAsJsonArray("choices")
+                    ?.get(0)?.asJsonObject
+                    ?.getAsJsonObject("message")
+                    ?.get("content")?.asString?.trim()
+                    ?: "(응답 파싱 실패)"
                 item.copy(summary = summary)
             }
         } catch (e: Exception) {
-            println("  [WARN] Ollama 요약 오류: ${item.title} - ${e.message}")
+            println("  [WARN] 본문 요약 오류: ${item.title} - ${e.message}")
             item.copy(summary = "(요약 오류: ${e.message})")
         }
     }

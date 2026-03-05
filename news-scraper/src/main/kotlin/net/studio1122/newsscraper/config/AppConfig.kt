@@ -4,8 +4,8 @@ import java.util.Properties
 
 data class AppConfig(
     val geekNewsUrl: String,
-    val ollamaUrl: String,
-    val ollamaModel: String,
+    val openrouterModel: String,
+    val openrouterApiKey: String,
     val targetApiUrl: String,
     val authApiUrl: String,
     val username: String,
@@ -21,8 +21,8 @@ data class AppConfig(
 
             return AppConfig(
                 geekNewsUrl = env("GEEKNEWS_URL") ?: props.getProperty("geeknews.url", "https://news.hada.io"),
-                ollamaUrl = env("OLLAMA_URL") ?: props.getProperty("ollama.url", "http://localhost:11434"),
-                ollamaModel = env("OLLAMA_MODEL") ?: props.getProperty("ollama.model", "gpt-oss:20b"),
+                openrouterModel = env("OPENROUTER_MODEL") ?: props.getProperty("openrouter.model", "qwen/qwen3-vl-30b-a3b-thinking"),
+                openrouterApiKey = env("OPENROUTER_API_KEY") ?: props.getProperty("openrouter.api.key", ""),
                 targetApiUrl = env("TARGET_API_URL") ?: props.getProperty("target.api.url", "http://localhost:8080/api/news"),
                 authApiUrl = env("AUTH_API_URL") ?: props.getProperty("auth.api.url", "https://tux.studio1122.net/api/auth"),
                 username = env("NEWS_USERNAME") ?: props.getProperty("auth.username", "newsbot"),

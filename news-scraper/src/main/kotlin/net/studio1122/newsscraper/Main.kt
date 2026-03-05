@@ -4,7 +4,7 @@ import net.studio1122.newsscraper.config.AppConfig
 import net.studio1122.newsscraper.crawler.GeekNewsCrawler
 import net.studio1122.newsscraper.crawler.TopicDetailCrawler
 import net.studio1122.newsscraper.sender.ResultSender
-import net.studio1122.newsscraper.summarizer.OllamaSummarizer
+import net.studio1122.newsscraper.summarizer.AISummarizer
 
 fun main() {
     println("=== GeekNews 크롤러 시작 ===")
@@ -14,7 +14,7 @@ fun main() {
     val config = AppConfig.load()
     println("[INFO] 설정 로드 완료")
     println("  - GeekNews URL: ${config.geekNewsUrl}")
-    println("  - Ollama: ${config.ollamaUrl} (model: ${config.ollamaModel})")
+    println("  - OpenRouter model: ${config.openrouterModel}")
     println("  - Target API: ${config.targetApiUrl}")
     println("  - Auth API: ${config.authApiUrl} (user: ${config.username})")
 
@@ -46,9 +46,9 @@ fun main() {
     }
     println("[INFO] 본문 추출 완료: ${contentCount}/${newsItems.size}건")
 
-    // 4. Ollama로 요약 생성
-    println("\n[STEP 3] Ollama 요약 생성...")
-    val summarizer = OllamaSummarizer(config.ollamaUrl, config.ollamaModel)
+    // 4. OpenRouter로 요약 생성
+    println("\n[STEP 3] OpenRouter 요약 생성...")
+    val summarizer = AISummarizer(config.openrouterApiKey, config.openrouterModel)
     var summaryCount = 0
     val itemsWithSummary = itemsWithContent.map { item ->
         print("  - ${item.title.take(50)}... ")
