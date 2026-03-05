@@ -25,6 +25,19 @@ kotlin {
     jvmToolchain(17)
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'net.studio1122.newsscraper.MainKt'
+        )
+    }
+    // 모든 의존성 라이브러리를 JAR 안에 포함시키는 설정 (Fat JAR)
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 test {
     useJUnitPlatform()
 }
