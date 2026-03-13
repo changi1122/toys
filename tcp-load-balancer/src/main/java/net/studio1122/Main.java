@@ -14,6 +14,7 @@ import java.net.SocketException;
 public class Main {
     private volatile boolean running = true;
     private ServerSocket serverSocket;
+    private HealthChecker healthChecker;
 
     public static void main(String[] args) {
         new Main().start();
@@ -21,6 +22,13 @@ public class Main {
 
     public void start() {
         BackendPool pool = new BackendPool(Config.BACKENDS, new LeastConnection());
+
+        healthChecker = new HealthChecker(pool,
+                Config.HEALTH_CHECK_INTERVAL_MS,
+                Config.HEALTH_CHECK_TIMEOUT_MS);
+        Thread healthThread = new Thread(healthChecker, "health-checker");
+        healthThread.setDaemon(true); // LB가 종료되면 같이 종료
+        healthThread.start();
 
         // JVM 종료 시 (Ctrl+C 포함) 실행되는 훅
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop, "shutdown-hook"));
@@ -62,6 +70,7 @@ public class Main {
 
     public void stop() {
         running = false;
+        if (healthChecker != null) healthChecker.stop();
         try {
             if (serverSocket != null) serverSocket.close();
         } catch (IOException ignored) {}
