@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * TCP 로드밸런서 진입점.
@@ -15,6 +17,7 @@ public class Main {
     private volatile boolean running = true;
     private ServerSocket serverSocket;
     private HealthChecker healthChecker;
+    private ExecutorService executor;
 
     public static void main(String[] args) {
         new Main().start();
@@ -22,6 +25,7 @@ public class Main {
 
     public void start() {
         BackendPool pool = new BackendPool(Config.BACKENDS, new LeastConnection());
+        executor = Executors.newFixedThreadPool(Config.THREAD_POOL_SIZE);
 
         healthChecker = new HealthChecker(pool,
                 Config.HEALTH_CHECK_INTERVAL_MS,
@@ -36,7 +40,8 @@ public class Main {
         try {
             serverSocket = new ServerSocket(Config.LISTEN_PORT);
             serverSocket.setReuseAddress(true); // TIME_WAIT 상태 포트를 즉시 재사용 가능하게
-            System.out.println("[LB] Listening on :" + Config.LISTEN_PORT + " (Least Connection)");
+            System.out.println("[LB] Listening on :" + Config.LISTEN_PORT
+                    + " (Least Connection, ThreadPool=" + Config.THREAD_POOL_SIZE + ")");
 
             while (running) {
                 try {
@@ -46,9 +51,7 @@ public class Main {
                             backend -> {
                                 System.out.println("[LB] " + clientSocket.getRemoteSocketAddress()
                                         + " → " + backend);
-                                Thread t = new Thread(new ProxyHandler(clientSocket, backend));
-                                t.setDaemon(true); // JVM 종료 시 강제 종료되는 백그라운드 스레드
-                                t.start();
+                                executor.submit(new ProxyHandler(clientSocket, backend));
                             },
                             () -> {
                                 System.err.println("[LB] No healthy backends, dropping connection");
@@ -71,6 +74,7 @@ public class Main {
     public void stop() {
         running = false;
         if (healthChecker != null) healthChecker.stop();
+        if (executor != null) executor.shutdown(); // 진행 중인 작업은 마무리하고 종료
         try {
             if (serverSocket != null) serverSocket.close();
         } catch (IOException ignored) {}
