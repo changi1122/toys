@@ -1,6 +1,6 @@
 package net.studio1122;
 
-import net.studio1122.Algorithm.RoundRobin;
+import net.studio1122.Algorithm.LeastConnection;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -20,7 +20,7 @@ public class Main {
     }
 
     public void start() {
-        BackendPool pool = new BackendPool(Config.BACKENDS, new RoundRobin());
+        BackendPool pool = new BackendPool(Config.BACKENDS, new LeastConnection());
 
         // JVM 종료 시 (Ctrl+C 포함) 실행되는 훅
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop, "shutdown-hook"));
@@ -28,7 +28,7 @@ public class Main {
         try {
             serverSocket = new ServerSocket(Config.LISTEN_PORT);
             serverSocket.setReuseAddress(true); // TIME_WAIT 상태 포트를 즉시 재사용 가능하게
-            System.out.println("[LB] Listening on :" + Config.LISTEN_PORT + " (Round Robin)");
+            System.out.println("[LB] Listening on :" + Config.LISTEN_PORT + " (Least Connection)");
 
             while (running) {
                 try {
