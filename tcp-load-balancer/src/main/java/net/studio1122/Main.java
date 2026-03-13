@@ -1,5 +1,7 @@
 package net.studio1122;
 
+import net.studio1122.Algorithm.RoundRobin;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -18,7 +20,7 @@ public class Main {
     }
 
     public void start() {
-        Backend backend = new Backend(Config.BACKEND_HOST, Config.BACKEND_PORT);
+        BackendPool pool = new BackendPool(Config.BACKENDS, new RoundRobin());
 
         // JVM 종료 시 (Ctrl+C 포함) 실행되는 훅
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop, "shutdown-hook"));
@@ -26,18 +28,25 @@ public class Main {
         try {
             serverSocket = new ServerSocket(Config.LISTEN_PORT);
             serverSocket.setReuseAddress(true); // TIME_WAIT 상태 포트를 즉시 재사용 가능하게
-            System.out.println("[LB] Listening on :" + Config.LISTEN_PORT
-                    + " → backend " + backend);
+            System.out.println("[LB] Listening on :" + Config.LISTEN_PORT + " (Round Robin)");
 
             while (running) {
                 try {
                     Socket clientSocket = serverSocket.accept(); // 연결이 올 때까지 블로킹
-                    System.out.println("[LB] New connection from "
-                            + clientSocket.getRemoteSocketAddress());
 
-                    Thread t = new Thread(new ProxyHandler(clientSocket, backend));
-                    t.setDaemon(true); // JVM 종료 시 강제 종료되는 백그라운드 스레드
-                    t.start();
+                    pool.next().ifPresentOrElse(
+                            backend -> {
+                                System.out.println("[LB] " + clientSocket.getRemoteSocketAddress()
+                                        + " → " + backend);
+                                Thread t = new Thread(new ProxyHandler(clientSocket, backend));
+                                t.setDaemon(true); // JVM 종료 시 강제 종료되는 백그라운드 스레드
+                                t.start();
+                            },
+                            () -> {
+                                System.err.println("[LB] No healthy backends, dropping connection");
+                                try { clientSocket.close(); } catch (IOException ignored) {}
+                            }
+                    );
 
                 } catch (SocketException e) {
                     if (!running) break; // stop()에 의해 serverSocket이 닫힌 경우
