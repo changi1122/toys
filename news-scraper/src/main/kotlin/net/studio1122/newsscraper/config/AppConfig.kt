@@ -21,7 +21,7 @@ data class AppConfig(
 
             return AppConfig(
                 geekNewsUrl = env("GEEKNEWS_URL") ?: props.getProperty("geeknews.url", "https://news.hada.io"),
-                openrouterModel = env("OPENROUTER_MODEL") ?: props.getProperty("openrouter.model", "qwen/qwen3-vl-30b-a3b-thinking"),
+                openrouterModel = env("OPENROUTER_MODEL") ?: props.getProperty("openrouter.model", "nvidia/nemotron-nano-12b-v2-vl:free"),
                 openrouterApiKey = env("OPENROUTER_API_KEY") ?: props.getProperty("openrouter.api.key", ""),
                 targetApiUrl = env("TARGET_API_URL") ?: props.getProperty("target.api.url", "http://localhost:8080/api/news"),
                 authApiUrl = env("AUTH_API_URL") ?: props.getProperty("auth.api.url", "https://tux.studio1122.net/api/auth"),
