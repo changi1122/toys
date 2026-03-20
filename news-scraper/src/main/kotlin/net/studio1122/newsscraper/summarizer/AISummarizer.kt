@@ -28,7 +28,12 @@ class AISummarizer(
         }
 
         return try {
-            val prompt = "다음 글을 한국어로 3-4문장으로 요약해줘:\n\n${item.content}"
+            val prompt = """
+                Write the response in plain text only, without using any Markdown formatting. 
+                Use only Korean, English, and special characters, avoiding other languages as much as possible. 
+                Summarize the following text in 3-4 Korean sentences.:\n\n
+                ${item.content}
+                """.trimIndent()
             val body = gson.toJson(
                 mapOf(
                     "model" to model,
