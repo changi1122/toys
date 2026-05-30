@@ -16,10 +16,10 @@ class GeekNewsCrawler(private val baseUrl: String) {
         // 각 뉴스 아이템은 div.topic_row
         val rows = doc.select("div.topic_row")
         for (row in rows) {
-            // 제목: .topictitle h1 텍스트 + .topicurl 텍스트
-            val h1 = row.selectFirst("div.topictitle h1") ?: continue
+            // 제목: .topictitle h2 텍스트
+            val h2 = row.selectFirst("div.topictitle h2") ?: continue
             val topicUrlSpan = row.selectFirst("span.topicurl")
-            val title = h1.text().trim() +
+            val title = h2.text().trim() +
                 (if (topicUrlSpan != null) " ${topicUrlSpan.text().trim()}" else "")
             if (title.isBlank()) continue
 
