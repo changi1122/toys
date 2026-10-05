@@ -1,3 +1,4 @@
 geospatial-index-test/.env
 .env
 .venv
+retrieved/**
