@@ -1,0 +1,60 @@
+erDiagram
+    customers ||--o{ orders : places
+    orders ||--|{ order_items : contains
+    products ||--o{ order_items : “included_in”
+    orders ||--o{ order_payments : “paid_by”
+    product_category |o..o{ products : categorizes
+
+customers {
+    varchar(50) customer_id PK
+    varchar(50) customer_unique_id
+    varchar(10) customer_zip_code_prefix
+    varchar(100) customer_city
+    varchar(2) customer_state
+}
+
+orders {
+    varchar(50) order_id PK
+    varchar(50) customer_id FK
+    varchar(20) order_status
+    timestamp order_purchase_timestamp
+    timestamp order_approved_at
+    timestamp order_delivered_carrier_date
+    timestamp order_delivered_customer_date
+    timestamp order_estimated_delivery_date
+}
+
+product_category {
+    varchar(50) product_category_name PK
+    varchar(50) product_category_name_english
+}
+
+products {
+    varchar(50) product_id PK
+    varchar(50) product_category_name
+    int product_name_length
+    int product_description_length
+    int product_photos_qty
+    int product_weight_g
+    int product_length_cm
+    int product_height_cm
+    int product_width_cm
+}
+
+order_items {
+    varchar(50) order_id PK, FK
+    int order_item_id PK
+    varchar(50) product_id FK
+    varchar(50) seller_id
+    timestamp shipping_limit_date
+    numeric(12,4) price
+    numeric(12,4) freight_value
+}
+
+order_payments {
+    varchar(50) order_id PK, FK
+    int payment_sequential PK
+    varchar(20) payment_type
+    int payment_installments
+    numeric(12,4) payment_value
+}
